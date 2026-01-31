@@ -12,14 +12,11 @@ def create_researcher(selection):
     
     Args:
         selection (dict): Contains provider and model information
-            - provider (str): The LLM provider ("OpenAI", "GROQ", or "Ollama")
+            - provider (str): The LLM provider
             - model (str): The model identifier or name
     
     Returns:
         Agent: A configured CrewAI agent ready for research tasks
-    
-    Note:
-        Uses CrewAI's built-in web search and scraping tools - no external API keys needed.
     """
     provider = selection["provider"]
     model = selection["model"]
@@ -28,6 +25,13 @@ def create_researcher(selection):
         llm = LLM(
             api_key=os.environ.get("GROQ_API_KEY", ""),
             model=f"groq/{model}"
+        )
+    elif provider == "Zhipu AI (GLM)":
+        # Zhipu AI GLM models - use OpenAI-compatible format
+        llm = LLM(
+            api_key=os.environ.get("ZHIPUAI_API_KEY", ""),
+            model=f"zhipuai/{model}",
+            base_url="https://open.bigmodel.cn/api/paas/v4"
         )
     elif provider == "Ollama":
         llm = LLM(

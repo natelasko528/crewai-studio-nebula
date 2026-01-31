@@ -1,6 +1,83 @@
 import streamlit as st
 import os
 import requests
+from openai import OpenAI
+
+def get_openai_models():
+    """Fetch available OpenAI models dynamically from the API.
+    
+    Returns:
+        list: List of model IDs, or default list if API call fails
+    """
+    try:
+        # Try to fetch models from OpenAI API
+        api_key = os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            # Return current defaults if no API key
+            return [
+                "gpt-5.2",          # Latest flagship (Jan 2026)
+                "gpt-5.2-pro",      # Pro version
+                "gpt-5.1",          # Previous flagship
+                "gpt-5",            # Original GPT-5
+                "gpt-5-mini",       # Faster/cheaper GPT-5
+                "gpt-5-nano",       # Smallest GPT-5
+                "gpt-4.1",          # Non-reasoning flagship
+                "gpt-4.1-mini",     # Smaller GPT-4.1
+                "gpt-4.1-nano",     # Smallest GPT-4.1
+                "gpt-4o",           # Multimodal
+                "gpt-4o-mini",      # Cheaper multimodal
+                "gpt-4-turbo",      # Legacy turbo
+                "gpt-3.5-turbo",    # Legacy 3.5
+            ]
+        
+        client = OpenAI(api_key=api_key)
+        models = client.models.list()
+        
+        # Filter for GPT models only (including o-series reasoning models)
+        gpt_models = [
+            m.id for m in models.data 
+            if ('gpt' in m.id.lower() or m.id.startswith('o')) 
+            and not any(x in m.id.lower() for x in ['whisper', 'tts', 'transcribe', 'embedding', 'moderation', 'image', 'realtime', 'audio'])
+        ]
+        
+        # Sort with priority: GPT-5.2 > GPT-5 > GPT-4 > o-series > GPT-3
+        def model_priority(model_id):
+            if 'gpt-5.2' in model_id.lower():
+                return (0, model_id)
+            elif 'gpt-5' in model_id.lower():
+                return (1, model_id)
+            elif 'gpt-4' in model_id.lower():
+                return (2, model_id)
+            elif model_id.startswith('o'):
+                return (3, model_id)
+            else:
+                return (4, model_id)
+        
+        gpt_models.sort(key=model_priority)
+        
+        # Return fetched models or defaults if none found
+        return gpt_models if gpt_models else [
+            "gpt-5.2", "gpt-5.2-pro", "gpt-5.1", "gpt-5", "gpt-5-mini", "gpt-5-nano",
+            "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano", "gpt-4o", "gpt-4o-mini"
+        ]
+        
+    except Exception as e:
+        # If API call fails, return current defaults (Jan 2026)
+        return [
+            "gpt-5.2",          # Latest flagship (Jan 2026)
+            "gpt-5.2-pro",      # Pro version
+            "gpt-5.1",          # Previous flagship
+            "gpt-5",            # Original GPT-5
+            "gpt-5-mini",       # Faster/cheaper GPT-5
+            "gpt-5-nano",       # Smallest GPT-5
+            "gpt-4.1",          # Non-reasoning flagship
+            "gpt-4.1-mini",     # Smaller GPT-4.1
+            "gpt-4.1-nano",     # Smallest GPT-4.1
+            "gpt-4o",           # Multimodal
+            "gpt-4o-mini",      # Cheaper multimodal
+            "gpt-4-turbo",      # Legacy turbo
+            "gpt-3.5-turbo",    # Legacy 3.5
+        ]
 
 def render_sidebar():
     """Render the sidebar with API key inputs and model selection.
@@ -28,21 +105,24 @@ def render_sidebar():
             if api_key:
                 os.environ["OPENAI_API_KEY"] = api_key
             
-            # Updated model selection for OpenAI (January 2026)
+            # Dynamically fetch OpenAI models
+            with st.spinner("Loading models..."):
+                available_models = get_openai_models()
+            
+            # Model selection for OpenAI
             model = st.selectbox(
                 "Select Model",
-                [
-                    "gpt-4o",           # Latest GPT-4 Optimized
-                    "gpt-4o-mini",      # Faster, cheaper GPT-4o
-                    "gpt-4-turbo",      # GPT-4 Turbo
-                    "gpt-4",            # Standard GPT-4
-                    "gpt-3.5-turbo",    # GPT-3.5
-                    "o1",               # o1 reasoning model
-                    "o1-mini",          # Smaller o1
-                    "o1-preview"        # o1 preview
-                ],
-                help="Choose the OpenAI model to use"
+                available_models,
+                help="Choose the OpenAI model to use (auto-updated from API)"
             )
+            
+            # Show info about the selected model
+            if "5.2" in model:
+                st.info("🔥 GPT-5.2 is the latest flagship reasoning model (Jan 2026)")
+            elif "5.1" in model or "5" in model:
+                st.info("🧠 GPT-5 series: Advanced reasoning models")
+            elif "4.1" in model:
+                st.info("⚡ GPT-4.1: Fast non-reasoning model")
             
         elif provider == "GROQ":
             api_key = st.text_input(
@@ -93,6 +173,7 @@ def render_sidebar():
         
         **Features:**
         - Multi-provider LLM support
+        - Dynamic model list (auto-updates)
         - Built-in web search (no extra API keys)
         - Real-time research tracking
         - Structured report generation

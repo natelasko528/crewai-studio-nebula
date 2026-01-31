@@ -15,177 +15,127 @@ def main():
     st.markdown("**Visual Multi-Agent Orchestration Platform**")
     st.markdown("---")
     
-    # Environment check
+    # Status indicators
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if os.getenv("OPENAI_API_KEY"):
-            st.success("✅ OpenAI API Key Configured")
-        else:
-            st.warning("⚠️ OpenAI API Key Missing")
+        st.success("✅ Streamlit Running")
     
     with col2:
-        st.info(f"🐍 Python Ready")
+        st.info("🐍 Python 3.11")
     
     with col3:
-        st.info(f"⚡ CrewAI v1.9.3")
+        if os.getenv("OPENAI_API_KEY"):
+            st.success("✅ API Key Configured")
+        else:
+            st.warning("⚠️ API Key Missing")
     
     st.markdown("---")
     
-    # Tabs
-    tab1, tab2, tab3 = st.tabs(["📊 Overview", "⚙️ Configuration", "📚 Documentation"])
+    # Main content
+    st.subheader("Welcome to CrewAI Studio")
     
-    with tab1:
-        st.subheader("Welcome to CrewAI Studio")
-        st.write("""
-        This is your visual interface for building and managing AI agent teams using CrewAI.
-        
-        **Key Features:**
-        - 🤖 Create and configure AI agents
-        - 🔗 Define agent workflows and collaboration patterns
-        - 📊 Monitor agent execution in real-time
-        - 🎯 Manage tasks and objectives
-        - 💾 Persistent storage of configurations
-        """)
-        
-        st.markdown("### Quick Start")
-        st.write("""
-        1. Configure your OpenAI API key in Streamlit Cloud settings
-        2. Create your first agent using the sidebar
-        3. Define tasks and objectives
-        4. Run your multi-agent workflow
-        """)
-        
-        # Stats
-        st.markdown("### Platform Stats")
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Agents Created", "0", "+0")
-        col2.metric("Tasks Completed", "0", "+0")
-        col3.metric("Workflows Active", "0", "+0")
-        col4.metric("Uptime", "100%", "0s")
+    st.markdown("""
+    ### 🎯 What is CrewAI Studio?
     
-    with tab2:
-        st.subheader("⚙️ Configuration")
-        
-        st.markdown("#### API Keys")
-        st.write("Configure your API keys in Streamlit Cloud:")
-        
-        st.code("""
-# Go to: App Settings → Secrets
-# Add the following:
-
-OPENAI_API_KEY = "sk-..."
-        """, language="toml")
-        
-        st.markdown("#### Agent Configuration")
-        st.write("Create and configure your AI agents:")
-        
-        with st.expander("Create New Agent"):
-            agent_name = st.text_input("Agent Name", placeholder="Data Analyst")
-            agent_role = st.text_input("Agent Role", placeholder="Expert in data analysis")
-            agent_goal = st.text_area("Agent Goal", placeholder="Analyze data and provide insights")
-            
-            if st.button("Create Agent"):
-                if agent_name and agent_role and agent_goal:
-                    st.success(f"✅ Agent '{agent_name}' created successfully!")
-                else:
-                    st.error("Please fill in all fields")
-        
-        st.markdown("#### Workflow Settings")
-        st.write("Configure how agents collaborate:")
-        
-        workflow_type = st.selectbox(
-            "Workflow Type",
-            ["Sequential", "Parallel", "Hierarchical"]
-        )
-        
-        max_iterations = st.slider("Max Iterations", 1, 20, 10)
-        
-        st.info(f"Selected: {workflow_type} workflow with {max_iterations} max iterations")
+    CrewAI Studio is a visual interface for building and managing AI agent teams. 
+    This platform allows you to:
     
-    with tab3:
-        st.subheader("📚 Documentation")
-        
+    - 🤖 **Create AI Agents** - Define specialized agents with unique roles and goals
+    - 🔗 **Build Workflows** - Connect agents to work together on complex tasks
+    - 📊 **Monitor Execution** - Track agent performance and results in real-time
+    - 💾 **Save Configurations** - Store and reuse your agent teams
+    
+    ### 🚀 Quick Start
+    
+    1. **Configure API Key** - Add your OpenAI API key in Streamlit Cloud settings:
+       - Go to Settings → Secrets
+       - Add: `OPENAI_API_KEY = "your-key-here"`
+    
+    2. **Create Your First Agent** - Define an agent with a specific role and goal
+    
+    3. **Build a Crew** - Combine multiple agents to tackle complex tasks
+    
+    4. **Run & Monitor** - Execute your crew and watch agents collaborate
+    
+    ### 📚 Documentation
+    
+    **Agent Configuration:**
+    ```python
+    agent = Agent(
+        role="Research Analyst",
+        goal="Find and summarize information",
+        backstory="Expert researcher with attention to detail"
+    )
+    ```
+    
+    **Task Definition:**
+    ```python
+    task = Task(
+        description="Research AI trends in 2024",
+        agent=research_agent,
+        expected_output="Comprehensive report"
+    )
+    ```
+    
+    **Crew Setup:**
+    ```python
+    crew = Crew(
+        agents=[agent1, agent2],
+        tasks=[task1, task2],
+        process=Process.sequential
+    )
+    ```
+    
+    ### 🔧 System Status
+    """)
+    
+    # Status metrics
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Deployment", "Active", "✅")
+    with col2:
+        st.metric("Status", "Online", "100%")
+    with col3:
+        st.metric("Version", "1.0.0", "+stable")
+    with col4:
+        st.metric("Uptime", "99.9%", "+0.1%")
+    
+    st.markdown("---")
+    
+    # Configuration section
+    with st.expander("⚙️ Configuration Guide"):
         st.markdown("""
-        ### Getting Started with CrewAI
+        ### Environment Variables
         
-        CrewAI is a framework for orchestrating autonomous AI agents. Agents work together
-        to accomplish complex tasks through role-based collaboration.
+        Configure these in Streamlit Cloud Settings → Secrets:
         
-        #### Core Concepts
-        
-        **Agents:**
-        - Autonomous AI entities with specific roles and goals
-        - Can use tools and make decisions
-        - Collaborate with other agents to solve problems
-        
-        **Tasks:**
-        - Discrete units of work assigned to agents
-        - Have clear objectives and success criteria
-        - Can be sequential or parallel
-        
-        **Crews:**
-        - Teams of agents working together
-        - Defined workflows and collaboration patterns
-        - Shared context and memory
-        
-        #### Example Usage
-        
-        ```python
-        from crewai import Agent, Task, Crew
-        
-        # Create an agent
-        researcher = Agent(
-            role='Researcher',
-            goal='Find and analyze information',
-            backstory='Expert researcher with attention to detail'
-        )
-        
-        # Define a task
-        task = Task(
-            description='Research AI trends in 2024',
-            agent=researcher
-        )
-        
-        # Create a crew
-        crew = Crew(
-            agents=[researcher],
-            tasks=[task]
-        )
-        
-        # Execute
-        result = crew.kickoff()
+        ```toml
+        OPENAI_API_KEY = "sk-..."
         ```
         
-        #### Resources
+        ### Optional Settings
         
-        - [CrewAI Documentation](https://docs.crewai.com)
-        - [GitHub Repository](https://github.com/joaomdmoura/crewai)
-        - [Community Discord](https://discord.gg/crewai)
+        ```toml
+        # Model selection
+        OPENAI_MODEL = "gpt-4"
+        
+        # Temperature control
+        TEMPERATURE = "0.7"
+        
+        # Max tokens
+        MAX_TOKENS = "2000"
+        ```
         """)
     
-    # Sidebar
-    with st.sidebar:
-        st.image("https://avatars.githubusercontent.com/u/170677839?s=200&v=4", width=100)
-        st.markdown("### CrewAI Studio")
-        st.markdown(f"**Version:** 1.9.3")
-        st.markdown(f"**Deployed:** {datetime.now().strftime('%Y-%m-%d')}")
-        st.markdown("---")
-        
-        st.markdown("### Quick Actions")
-        if st.button("🔄 Refresh"):
-            st.rerun()
-        
-        if st.button("📥 Export Config"):
-            st.info("Export feature coming soon!")
-        
-        if st.button("📤 Import Config"):
-            st.info("Import feature coming soon!")
-        
-        st.markdown("---")
-        st.markdown("### Status")
-        st.success("✅ System Ready")
-        st.info("📡 Connected to Nebula")
+    # Footer
+    st.markdown("---")
+    st.markdown("""
+    <div style='text-align: center; color: #666;'>
+        <p>CrewAI Studio v1.0.0 | Powered by Streamlit & CrewAI</p>
+        <p>Need help? Check the <a href='https://docs.crewai.com' target='_blank'>CrewAI Documentation</a></p>
+    </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

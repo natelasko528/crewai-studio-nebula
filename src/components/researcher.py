@@ -317,16 +317,20 @@ def create_single_task(agent, task_description):
 #--------------------------------#
 #         Crew Execution         #
 #--------------------------------#
-def run_research(config, task_description):
+def run_research(researcher_or_config, task_or_description):
     """Execute research using configured agents and process.
     
     Args:
-        config: Configuration dict from sidebar
-        task_description: User's research query
+        researcher_or_config: Configuration dict (from create_researcher or sidebar)
+        task_or_description: Task description string (from create_research_task or direct)
     
     Returns:
         str: Research results
     """
+    # Handle both calling patterns: run_research(config, task_desc) or run_research(researcher, task)
+    config = researcher_or_config
+    task_description = task_or_description
+    
     if config["use_hierarchical"]:
         # HIERARCHICAL MODE: Manager + Workers
         manager = create_manager_agent(config)
@@ -354,3 +358,20 @@ def run_research(config, task_description):
         )
     
     return crew.kickoff()
+
+#--------------------------------#
+#      App.py Compatibility      #
+#--------------------------------#
+def create_researcher(selection):
+    """Wrapper function for app.py compatibility.
+
+    Returns the configuration dict needed by run_research.
+    """
+    return selection
+
+def create_research_task(researcher, task_description):
+    """Wrapper function for app.py compatibility.
+
+    Returns task description (researcher is actually the config dict).
+    """
+    return task_description

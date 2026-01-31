@@ -38,24 +38,31 @@ with col2:
 # Render sidebar and get selection (provider and model)
 selection = render_sidebar()
 
+# Safety check: ensure selection is a valid dictionary
+if not selection or not isinstance(selection, dict):
+    st.error("⚠️ Configuration error. Please refresh the page.")
+    st.stop()
+
 # Check if API keys are set based on provider
-if selection["provider"] == "OpenAI":
+if selection.get("provider") == "OpenAI" or selection.get("manager_provider") == "OpenAI":
     if not os.environ.get("OPENAI_API_KEY"):
         st.warning("⚠️ Please enter your OpenAI API key in the sidebar to get started")
         st.stop()
-elif selection["provider"] == "GROQ":
+elif selection.get("provider") == "GROQ" or selection.get("manager_provider") == "GROQ":
     if not os.environ.get("GROQ_API_KEY"):
         st.warning("⚠️ Please enter your GROQ API key in the sidebar to get started")
         st.stop()
 
 # Check EXA key for non-Ollama providers
-if selection["provider"] != "Ollama":
+provider = selection.get("provider") or selection.get("manager_provider")
+if provider and provider != "Ollama":
     if not os.environ.get("EXA_API_KEY"):
         st.warning("⚠️ Please enter your EXA API key in the sidebar to get started")
         st.stop()
 
 # Add Ollama check
-if selection["provider"] == "Ollama" and not selection["model"]:
+model = selection.get("model") or selection.get("manager_model")
+if provider == "Ollama" and not model:
     st.warning("⚠️ No Ollama models found. Please make sure Ollama is running and you have models loaded.")
     st.stop()
 
@@ -78,7 +85,7 @@ if start_research:
             # Create persistent container for process output with fixed height.
             process_container = st.container(height=300, border=True)
             output_container = process_container.container()
-            
+
             # Single output capture context.
             with capture_output(output_container):
                 researcher = create_researcher(selection)
@@ -89,19 +96,19 @@ if start_research:
             status.update(label="❌ Error occurred", state="error")
             st.error(f"An error occurred: {str(e)}")
             st.stop()
-    
+
     # Convert CrewOutput to string for display and download
     result_text = str(result)
-    
+
     # Display the final result
     st.markdown(result_text)
-    
+
     # Create download buttons
     st.divider()
     download_col1, download_col2, download_col3 = st.columns([1, 2, 1])
     with download_col2:
         st.markdown("### 📥 Download Research Report")
-        
+
         # Download as Markdown
         st.download_button(
             label="Download Report",

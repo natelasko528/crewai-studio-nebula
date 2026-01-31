@@ -9,75 +9,68 @@ def get_openai_models():
     Returns:
         list: List of model IDs, or default list if API call fails
     """
+    # Current defaults as of January 2026 (from official OpenAI docs)
+    default_models = [
+        "gpt-5.2",          # Latest flagship (Jan 2026)
+        "gpt-5.2-pro",      # Pro version with smarter responses
+        "gpt-5",            # Original GPT-5 with configurable reasoning
+        "gpt-5-mini",       # Faster, cost-efficient GPT-5
+        "gpt-5-nano",       # Fastest, most cost-efficient GPT-5
+        "gpt-4.1",          # Smartest non-reasoning model
+        "gpt-4o",           # Multimodal with audio (legacy)
+        "gpt-4o-mini",      # Cheaper multimodal (legacy)
+    ]
+    
     try:
         # Try to fetch models from OpenAI API
         api_key = os.environ.get("OPENAI_API_KEY", "")
         if not api_key:
-            # Return current defaults if no API key
-            return [
-                "gpt-5.2",          # Latest flagship (Jan 2026)
-                "gpt-5.2-pro",      # Pro version
-                "gpt-5.1",          # Previous flagship
-                "gpt-5",            # Original GPT-5
-                "gpt-5-mini",       # Faster/cheaper GPT-5
-                "gpt-5-nano",       # Smallest GPT-5
-                "gpt-4.1",          # Non-reasoning flagship
-                "gpt-4.1-mini",     # Smaller GPT-4.1
-                "gpt-4.1-nano",     # Smallest GPT-4.1
-                "gpt-4o",           # Multimodal
-                "gpt-4o-mini",      # Cheaper multimodal
-                "gpt-4-turbo",      # Legacy turbo
-                "gpt-3.5-turbo",    # Legacy 3.5
-            ]
+            return default_models
         
         client = OpenAI(api_key=api_key)
         models = client.models.list()
         
-        # Filter for GPT models only (including o-series reasoning models)
+        # Filter for chat/completion models only
         gpt_models = [
             m.id for m in models.data 
-            if ('gpt' in m.id.lower() or m.id.startswith('o')) 
-            and not any(x in m.id.lower() for x in ['whisper', 'tts', 'transcribe', 'embedding', 'moderation', 'image', 'realtime', 'audio'])
+            if ('gpt' in m.id.lower() or m.id.startswith('o1')) 
+            and not any(x in m.id.lower() for x in [
+                'whisper', 'tts', 'transcribe', 'embedding', 
+                'moderation', 'image', 'realtime', 'audio', 'sora',
+                'instruct'  # Exclude instruct-only models
+            ])
         ]
         
-        # Sort with priority: GPT-5.2 > GPT-5 > GPT-4 > o-series > GPT-3
+        # Sort with priority: GPT-5.2 > GPT-5 > GPT-4.1 > GPT-4o > o1 > older
         def model_priority(model_id):
-            if 'gpt-5.2' in model_id.lower():
+            lower = model_id.lower()
+            if 'gpt-5.2-pro' in lower:
                 return (0, model_id)
-            elif 'gpt-5' in model_id.lower():
+            elif 'gpt-5.2' in lower:
                 return (1, model_id)
-            elif 'gpt-4' in model_id.lower():
+            elif 'gpt-5-mini' in lower:
                 return (2, model_id)
-            elif model_id.startswith('o'):
+            elif 'gpt-5-nano' in lower:
                 return (3, model_id)
-            else:
+            elif 'gpt-5' in lower:
                 return (4, model_id)
+            elif 'gpt-4.1' in lower:
+                return (5, model_id)
+            elif 'gpt-4o' in lower:
+                return (6, model_id)
+            elif model_id.startswith('o1'):
+                return (7, model_id)
+            else:
+                return (8, model_id)
         
         gpt_models.sort(key=model_priority)
         
         # Return fetched models or defaults if none found
-        return gpt_models if gpt_models else [
-            "gpt-5.2", "gpt-5.2-pro", "gpt-5.1", "gpt-5", "gpt-5-mini", "gpt-5-nano",
-            "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano", "gpt-4o", "gpt-4o-mini"
-        ]
+        return gpt_models if gpt_models else default_models
         
     except Exception as e:
-        # If API call fails, return current defaults (Jan 2026)
-        return [
-            "gpt-5.2",          # Latest flagship (Jan 2026)
-            "gpt-5.2-pro",      # Pro version
-            "gpt-5.1",          # Previous flagship
-            "gpt-5",            # Original GPT-5
-            "gpt-5-mini",       # Faster/cheaper GPT-5
-            "gpt-5-nano",       # Smallest GPT-5
-            "gpt-4.1",          # Non-reasoning flagship
-            "gpt-4.1-mini",     # Smaller GPT-4.1
-            "gpt-4.1-nano",     # Smallest GPT-4.1
-            "gpt-4o",           # Multimodal
-            "gpt-4o-mini",      # Cheaper multimodal
-            "gpt-4-turbo",      # Legacy turbo
-            "gpt-3.5-turbo",    # Legacy 3.5
-        ]
+        # If API call fails, return defaults
+        return default_models
 
 def render_sidebar():
     """Render the sidebar with API key inputs and model selection.
@@ -91,7 +84,7 @@ def render_sidebar():
         # Provider selection
         provider = st.selectbox(
             "Select LLM Provider",
-            ["OpenAI", "GROQ", "Ollama"],
+            ["OpenAI", "GROQ", "Zhipu AI (GLM)", "Ollama"],
             help="Choose your preferred language model provider"
         )
         
@@ -113,16 +106,22 @@ def render_sidebar():
             model = st.selectbox(
                 "Select Model",
                 available_models,
-                help="Choose the OpenAI model to use (auto-updated from API)"
+                help="Choose the OpenAI model (auto-updates from API)"
             )
             
             # Show info about the selected model
-            if "5.2" in model:
-                st.info("🔥 GPT-5.2 is the latest flagship reasoning model (Jan 2026)")
-            elif "5.1" in model or "5" in model:
-                st.info("🧠 GPT-5 series: Advanced reasoning models")
+            if "5.2-pro" in model:
+                st.info("🔥 GPT-5.2 Pro: Most advanced with smarter responses")
+            elif "5.2" in model:
+                st.info("🚀 GPT-5.2: Latest flagship for coding & agents (Jan 2026)")
+            elif "5-mini" in model:
+                st.info("⚡ GPT-5 Mini: Fast & cost-efficient")
+            elif "5-nano" in model:
+                st.info("💨 GPT-5 Nano: Fastest & cheapest")
+            elif "5" in model:
+                st.info("🧠 GPT-5: Advanced reasoning model")
             elif "4.1" in model:
-                st.info("⚡ GPT-4.1: Fast non-reasoning model")
+                st.info("✨ GPT-4.1: Fast non-reasoning model")
             
         elif provider == "GROQ":
             api_key = st.text_input(
@@ -139,6 +138,29 @@ def render_sidebar():
                 ["llama-3.3-70b-versatile", "mixtral-8x7b-32768", "gemma2-9b-it"],
                 help="Choose the GROQ model to use"
             )
+            
+        elif provider == "Zhipu AI (GLM)":
+            api_key = st.text_input(
+                "Zhipu AI API Key",
+                type="password",
+                help="Get your API key from https://open.bigmodel.cn/usercenter/apikeys"
+            )
+            if api_key:
+                os.environ["ZHIPUAI_API_KEY"] = api_key
+            
+            # Model selection for Zhipu AI
+            model = st.selectbox(
+                "Select Model",
+                [
+                    "glm-4.7",           # Latest flagship (Jan 2026)
+                    "glm-4.7-flashx",    # Faster version
+                    "glm-4.7-flash",     # Fastest version
+                    "glm-4.6",           # Previous version
+                ],
+                help="GLM models from Zhipu AI - excellent for coding"
+            )
+            
+            st.info("🇨🇳 GLM-4.7: Latest Chinese flagship model with excellent coding capabilities")
             
         else:  # Ollama
             st.info("🔧 Make sure Ollama is running locally on port 11434")
@@ -178,6 +200,8 @@ def render_sidebar():
         - Real-time research tracking
         - Structured report generation
         - Citation management
+        
+        **New:** Zhipu AI GLM-4.7 support added!
         """)
         
         return {"provider": provider, "model": model}

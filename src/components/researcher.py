@@ -84,30 +84,16 @@ def create_researcher(selection):
             base_url="http://localhost:11434",
             model=f"ollama/{model}",
         )
-    else:
-        # Map friendly names to concrete model names for OpenAI
-        if model == "GPT-3.5":
-            model = "gpt-3.5-turbo"
-        elif model == "GPT-4":
-            model = "gpt-4"
-        elif model == "o1":
-            model = "o1"
-        elif model == "o1-mini":
-            model = "o1-mini"
-        elif model == "o1-preview":
-            model = "o1-preview"
-        # If model is custom but empty, fallback
-        if not model:
-            model = "o1"
+    else:  # OpenAI
+        # Model is already the actual model name from the dropdown
         llm = LLM(
             api_key=os.environ.get("OPENAI_API_KEY", ""),
             model=f"openai/{model}"
         )
     
-    
     researcher = Agent(
         role='Research Analyst',
-        goal='Conduct thorough research on given topics for the current year 2025',
+        goal='Conduct thorough research on given topics for the current year 2026',
         backstory='Expert at analyzing and summarizing complex information',
         tools=[EXAAnswerTool()],
         llm=llm,
@@ -131,7 +117,7 @@ def create_research_task(researcher, task_description):
     """
     return Task(
         description=task_description,
-        expected_output="""A comprehensive research report for the year 2025. 
+        expected_output="""A comprehensive research report for the year 2026. 
         The report must be detailed yet concise, focusing on the most significant and impactful findings.
         
         Format the output in clean markdown (without code block markers or backticks) using the following structure:
@@ -172,7 +158,7 @@ def create_research_task(researcher, task_description):
         - Prioritize recent and authoritative sources
         - Format as: "[Title] (URL) - [Publication Date if available]"
 
-        Note: Ensure all information is current and relevant to 2025. Include specific dates, 
+        Note: Ensure all information is current and relevant to 2026. Include specific dates, 
         numbers, and metrics whenever possible to support findings. All claims should be properly 
         cited using the sources discovered during research.
         """,

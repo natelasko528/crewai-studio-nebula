@@ -85,29 +85,15 @@ def render_sidebar():
                 st.error(f"Ollama connection error: {str(e)}")
                 model = None
         
-        # EXA API key (needed for all providers except Ollama)
-        if provider != "Ollama":
-            st.divider()
-            st.markdown("### 🔍 Research Tool")
-            exa_key = st.text_input(
-                "EXA API Key",
-                type="password",
-                help="Get your FREE API key from https://exa.ai - Required for web research"
-            )
-            if exa_key:
-                os.environ["EXA_API_KEY"] = exa_key
-            
-            # Add helpful link
-            st.markdown("[Get EXA API Key →](https://exa.ai)")
-        
         # Information section
         st.divider()
         st.markdown("### 📚 About")
         st.markdown("""
-        This research assistant uses CrewAI agents to conduct comprehensive research using AI.
+        This research assistant uses CrewAI agents with built-in web search to conduct comprehensive research.
         
         **Features:**
         - Multi-provider LLM support
+        - Built-in web search (no extra API keys)
         - Real-time research tracking
         - Structured report generation
         - Citation management

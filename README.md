@@ -1,12 +1,12 @@
 # 🔍 CrewAI Research Assistant
 
-A powerful AI-powered research assistant built with CrewAI, Streamlit, and Exa that conducts comprehensive research on any topic using AI agents.
+A powerful AI-powered research assistant built with CrewAI and Streamlit that conducts comprehensive research on any topic using AI agents.
 
 ## 🌟 Features
 
 - 📱 **Modern Responsive UI** - Clean, intuitive Streamlit interface
 - 🤖 **Multi-LLM Support** - OpenAI, GROQ, and Ollama integration
-- 🔍 **Advanced Research** - Uses Exa AI for deep web research
+- 🔍 **Built-in Web Search** - Uses CrewAI's native tools (no extra API keys needed)
 - 📊 **Real-time Progress** - Live visualization of research process
 - 📝 **Structured Reports** - Comprehensive markdown reports with citations
 - 📥 **Export Reports** - Download research as markdown files
@@ -18,10 +18,12 @@ Visit the live app: [CrewAI Research Assistant](https://crewai-studio-nebula-93d
 ## 📋 Prerequisites
 
 - Python 3.10-3.12
-- API Keys:
-  - OpenAI API Key (for GPT models) OR GROQ API Key
-  - Exa API Key (for research capabilities)
-  - Ollama (optional, for local models)
+- API Key for your chosen LLM provider:
+  - **OpenAI** API Key (for GPT models) OR
+  - **GROQ** API Key (for Llama/Mixtral) OR
+  - **Ollama** running locally (no API key needed)
+
+**Note:** Web search is built into CrewAI - no additional API keys required!
 
 ## 🛠️ Installation
 
@@ -47,14 +49,15 @@ pip install -r requirements.txt
 Create a `.streamlit/secrets.toml` file:
 ```toml
 OPENAI_API_KEY = "your-openai-key-here"
+# OR
 GROQ_API_KEY = "your-groq-key-here"
-EXA_API_KEY = "your-exa-key-here"
 ```
 
 Or set environment variables:
 ```bash
 export OPENAI_API_KEY="your-key"
-export EXA_API_KEY="your-key"
+# OR
+export GROQ_API_KEY="your-key"
 ```
 
 ## 🎯 Usage
@@ -66,7 +69,7 @@ streamlit run app.py
 
 2. **Configure in sidebar**
    - Select your LLM provider (OpenAI, GROQ, or Ollama)
-   - Enter your API keys
+   - Enter your API key (or use Ollama locally)
    - Choose your model
 
 3. **Start researching**
@@ -87,7 +90,7 @@ crewai-studio-nebula/
 │   ├── __init__.py
 │   ├── components/
 │   │   ├── __init__.py
-│   │   ├── researcher.py          # CrewAI agent and tasks
+│   │   ├── researcher.py          # CrewAI agent with native tools
 │   │   └── sidebar.py             # Sidebar configuration UI
 │   └── utils/
 │       ├── __init__.py
@@ -100,14 +103,24 @@ crewai-studio-nebula/
 ### OpenAI
 Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
 
+**Available Models:**
+- gpt-4o (latest, recommended)
+- gpt-4o-mini (faster/cheaper)
+- gpt-4-turbo
+- gpt-4
+- gpt-3.5-turbo
+- o1, o1-mini, o1-preview
+
 ### GROQ
 Get your API key from [GROQ Console](https://console.groq.com/keys)
 
-### Exa
-Get your API key from [Exa.ai](https://exa.ai)
+**Available Models:**
+- llama-3.3-70b-versatile
+- mixtral-8x7b-32768
+- gemma2-9b-it
 
 ### Ollama (Optional)
-Install Ollama locally from [ollama.com](https://ollama.com)
+Install Ollama locally from [ollama.com](https://ollama.com) - no API key needed!
 
 ## 🤝 Contributing
 
@@ -119,10 +132,9 @@ This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- [CrewAI](https://crewai.com) - AI agent framework
+- [CrewAI](https://crewai.com) - AI agent framework with built-in tools
 - [Streamlit](https://streamlit.io) - Web interface
-- [Exa](https://exa.ai) - Advanced search capabilities
 
 ---
 
-Made with ❤️ using CrewAI, Exa, and Streamlit
+Made with ❤️ using CrewAI and Streamlit

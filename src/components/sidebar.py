@@ -28,10 +28,19 @@ def render_sidebar():
             if api_key:
                 os.environ["OPENAI_API_KEY"] = api_key
             
-            # Model selection for OpenAI
+            # Updated model selection for OpenAI (January 2026)
             model = st.selectbox(
                 "Select Model",
-                ["o1", "o1-mini", "o1-preview", "GPT-4", "GPT-3.5"],
+                [
+                    "gpt-4o",           # Latest GPT-4 Optimized
+                    "gpt-4o-mini",      # Faster, cheaper GPT-4o
+                    "gpt-4-turbo",      # GPT-4 Turbo
+                    "gpt-4",            # Standard GPT-4
+                    "gpt-3.5-turbo",    # GPT-3.5
+                    "o1",               # o1 reasoning model
+                    "o1-mini",          # Smaller o1
+                    "o1-preview"        # o1 preview
+                ],
                 help="Choose the OpenAI model to use"
             )
             
@@ -79,13 +88,17 @@ def render_sidebar():
         # EXA API key (needed for all providers except Ollama)
         if provider != "Ollama":
             st.divider()
+            st.markdown("### 🔍 Research Tool")
             exa_key = st.text_input(
                 "EXA API Key",
                 type="password",
-                help="Get your API key from https://exa.ai"
+                help="Get your FREE API key from https://exa.ai - Required for web research"
             )
             if exa_key:
                 os.environ["EXA_API_KEY"] = exa_key
+            
+            # Add helpful link
+            st.markdown("[Get EXA API Key →](https://exa.ai)")
         
         # Information section
         st.divider()

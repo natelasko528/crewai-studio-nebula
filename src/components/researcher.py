@@ -321,8 +321,8 @@ def run_research(researcher_or_config, task_or_description):
     """Execute research using configured agents and process.
     
     Args:
-        researcher_or_config: Configuration dict (from create_researcher or sidebar)
-        task_or_description: Task description string (from create_research_task or direct)
+        config: Configuration dict from sidebar
+        task_description: User's research query
     
     Returns:
         str: Research results

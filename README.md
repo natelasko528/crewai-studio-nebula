@@ -1,85 +1,128 @@
-# CrewAI Studio - Nebula Integration
+# 🔍 CrewAI Research Assistant
 
-Visual multi-agent orchestration platform with Nebula integration. This is a deployment-ready fork of [CrewAI Studio](https://github.com/strnad/CrewAI-Studio) configured for cloud hosting.
+A powerful AI-powered research assistant built with CrewAI, Streamlit, and Exa that conducts comprehensive research on any topic using AI agents.
 
-## Features
+## 🌟 Features
 
-- 🎨 **Visual Crew Builder** - Drag-and-drop interface for creating multi-agent workflows
-- 🤖 **Multi-LLM Support** - OpenAI, Anthropic, Groq, Ollama, and local models
-- 🛠️ **40+ Built-in Tools** - Web scraping, APIs, code execution, file operations
-- 💾 **Persistent Storage** - SQLite (development) or PostgreSQL (production)
-- 🔄 **Real-time Monitoring** - Watch agents work with live output
-- 📊 **Results History** - Every crew run saved and searchable
-- 🔌 **Nebula Integration** - Sync with your existing Nebula agent network
+- 📱 **Modern Responsive UI** - Clean, intuitive Streamlit interface
+- 🤖 **Multi-LLM Support** - OpenAI, GROQ, and Ollama integration
+- 🔍 **Advanced Research** - Uses Exa AI for deep web research
+- 📊 **Real-time Progress** - Live visualization of research process
+- 📝 **Structured Reports** - Comprehensive markdown reports with citations
+- 📥 **Export Reports** - Download research as markdown files
 
-## Quick Deploy
+## 🚀 Live Demo
 
-### Railway
+Visit the live app: [CrewAI Research Assistant](https://crewai-studio-nebula-93dwdsrfadgvtdjntzrogq.streamlit.app/)
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template)
+## 📋 Prerequisites
 
-1. Click the button above
-2. Set environment variable: `OPENAI_API_KEY`
-3. Deploy!
+- Python 3.10-3.12
+- API Keys:
+  - OpenAI API Key (for GPT models) OR GROQ API Key
+  - Exa API Key (for research capabilities)
+  - Ollama (optional, for local models)
 
-### Vercel
+## 🛠️ Installation
 
+1. **Clone the repository**
 ```bash
-vercel deploy
+git clone https://github.com/natelasko528/crewai-studio-nebula.git
+cd crewai-studio-nebula
 ```
 
-### Docker
-
+2. **Create virtual environment**
 ```bash
-docker build -t crewai-studio .
-docker run -p 8501:8501 -e OPENAI_API_KEY=your_key crewai-studio
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-## Environment Variables
-
-Required:
-- `OPENAI_API_KEY` - Your OpenAI API key
-
-Optional:
-- `ANTHROPIC_API_KEY` - Anthropic Claude API key
-- `GROQ_API_KEY` - Groq API key
-- `DATABASE_URL` - PostgreSQL connection string (defaults to SQLite)
-
-## Local Development
-
+3. **Install dependencies**
 ```bash
-# Install dependencies
 pip install -r requirements.txt
+```
 
-# Run setup
-sh setup.sh
+4. **Set up API keys**
 
-# Start application
+Create a `.streamlit/secrets.toml` file:
+```toml
+OPENAI_API_KEY = "your-openai-key-here"
+GROQ_API_KEY = "your-groq-key-here"
+EXA_API_KEY = "your-exa-key-here"
+```
+
+Or set environment variables:
+```bash
+export OPENAI_API_KEY="your-key"
+export EXA_API_KEY="your-key"
+```
+
+## 🎯 Usage
+
+1. **Run the application**
+```bash
 streamlit run app.py
 ```
 
-Access at: http://localhost:8501
+2. **Configure in sidebar**
+   - Select your LLM provider (OpenAI, GROQ, or Ollama)
+   - Enter your API keys
+   - Choose your model
 
-## Architecture
+3. **Start researching**
+   - Enter your research topic
+   - Click "Start Research"
+   - Watch the AI agent work in real-time
+   - Download your comprehensive report
+
+## 📁 Project Structure
 
 ```
-Nebula Agents → CrewAI Studio GUI → Database → CrewAI Framework
+crewai-studio-nebula/
+├── app.py                          # Main Streamlit application
+├── requirements.txt                # Python dependencies
+├── .streamlit/
+│   └── config.toml                # Streamlit configuration
+├── src/
+│   ├── __init__.py
+│   ├── components/
+│   │   ├── __init__.py
+│   │   ├── researcher.py          # CrewAI agent and tasks
+│   │   └── sidebar.py             # Sidebar configuration UI
+│   └── utils/
+│       ├── __init__.py
+│       └── output_handler.py      # Real-time output capture
+└── output/                         # Generated research reports
 ```
 
-## Documentation
+## 🔑 API Keys
 
-- [Complete Setup Guide](../docs/CREWAI_GUI_COMPLETE_GUIDE.md)
-- [Architecture Overview](../docs/CREWAI_STUDIO_ARCHITECTURE.md)
-- [Integration Bridge](../code/integration/nebula_crewai_bridge.py)
+### OpenAI
+Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
 
-## Original Project
+### GROQ
+Get your API key from [GROQ Console](https://console.groq.com/keys)
 
-This deployment is based on [CrewAI Studio](https://github.com/strnad/CrewAI-Studio) by strnad.
+### Exa
+Get your API key from [Exa.ai](https://exa.ai)
 
-- ⭐ 1,151 GitHub stars
-- 📝 MIT License
-- 🔥 Production-ready
+### Ollama (Optional)
+Install Ollama locally from [ollama.com](https://ollama.com)
 
-## License
+## 🤝 Contributing
 
-MIT License - See LICENSE file for details
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- [CrewAI](https://crewai.com) - AI agent framework
+- [Streamlit](https://streamlit.io) - Web interface
+- [Exa](https://exa.ai) - Advanced search capabilities
+
+---
+
+Made with ❤️ using CrewAI, Exa, and Streamlit
